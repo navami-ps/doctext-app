@@ -22,6 +22,7 @@ function App() {
   const [editingTodo, setEditingTodo] = useState(null);
   const [todoList, setTodoList] = useState([]);
   const [todoTitle, setTodoTitle] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const todoCollectionRef = collection(db, 'todos');
 
@@ -83,7 +84,7 @@ function App() {
   }, []);
   const gradientStyle = {
     width: '100%',
-    height:'100vh',
+    height:'200vh',
     background: 'rgb(134,218,255)',
     background: 'linear-gradient(90deg, rgba(134,218,255,1) 0%, rgba(255,255,255,1) 100%, rgba(255,255,255,1) 100%)'
   };
@@ -109,38 +110,47 @@ function App() {
       });
     }
   }, [darkMode]);
-  
+
+  const filteredTodoList = todoList.filter((todo) =>
+    todo.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div style={darkMode ?body:gradientStyle}>
-      <Navbar className={`bg-${darkMode ? 'dark' : 'primary'} w-100`} style={{ width: '100%',height:'12vh'}}>
-        <Container>
-          <Navbar.Brand>
-              <div className='d-flex'>            <i className={`fa-solid fa-file-signature text-${darkMode ? 'light' : 'light'}`}></i> <h1 className={`text-${darkMode ? 'light' : 'light'}`}>Add Skill</h1></div>
-          </Navbar.Brand>
-          <i className={`fa-solid ${darkMode ? 'fa-sun' : 'fa-moon'} fs-2 text-light`} onClick={toggleDarkMode}></i>
-        </Container>
-      </Navbar>
+    <div style={darkMode ? body : gradientStyle}>
       <Routes>
         <Route path="/quil/:id" element={<QuillComponent />} />
       </Routes>
-      <div className='d-flex w-100 align-items-center justify-content-center flex-column mt-5'>
-        <button className={`btn ${darkMode ? 'btn-outline-light':'btn-outline-primary'} p-2`} onClick={handleShow}><i className="fa-solid fa-plus me-2"></i>Add Document</button>
-            <div className='d-flex justify-content-center p-5'>
-              {todoList.map((todo) => (
-                <DocumentCard
-                  key={todo.id}
-                  todo={todo}
-                  editingTodo={editingTodo}
-                  editingTitle={editingTitle}
-                  setEditingTodo={setEditingTodo}
-                  setEditingTitle={setEditingTitle}
-                  updateTodo={updateTodo}
-                  deleteTodo={deleteTodo}
-                  darkMode={darkMode}
-                />
-              ))}
-            </div>
+      <div className='d-flex w-100 align-items-center justify-content-center flex-column' style={{ width: '100%', height: '100vh' }}>
+        <div className='d-flex w-25 align-items-center justify-content-between ps-2'>
+          <input
+            type="text"
+            className={`form-control ${darkMode ? 'text-light' : ''}`}
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button style={{width:'120px',height:'40px'}} className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-primary'} p-2 ms-2`} onClick={handleShow}>
+            <i className="fa-solid fa-plus me-2"></i>Add
+          </button>
+          <button className='btn' onClick={toggleDarkMode}>
+            <i className={`fa-solid ${darkMode ? 'fa-sun' : 'fa-moon'} fs-2 text-light`}></i>
+          </button>
+        </div>
+        <div className='d-flex justify-content-center p-5'>
+          {filteredTodoList.map((todo) => (
+            <DocumentCard
+              key={todo.id}
+              todo={todo}
+              editingTodo={editingTodo}
+              editingTitle={editingTitle}
+              setEditingTodo={setEditingTodo}
+              setEditingTitle={setEditingTitle}
+              updateTodo={updateTodo}
+              deleteTodo={deleteTodo}
+              darkMode={darkMode}
+            />
+          ))}
+        </div>
         <AddDocumentModal
           show={show}
           handleClose={handleClose}
@@ -149,7 +159,18 @@ function App() {
           postData={postData}
         />
       </div>
-      <ToastContainer />
+      <ToastContainer
+          position="top-center" // You can change the position as needed
+          autoClose={2000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          style={{ bottom: '50px', color: 'white', width: 'fit-content' }}
+        />
     </div>
   );
 }

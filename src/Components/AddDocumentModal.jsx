@@ -15,8 +15,8 @@ const AddDocumentModal = ({ show, handleClose, todoTitle, setTodoTitle, postData
             onChange={(e) => setTodoTitle(e.target.value)}
           />
           <button
-            className='mt-3 rounded ps-5 pe-5'
-            variant="secondary"
+            className='mt-3 rounded ps-5 pe-5 btn btn-primary'
+            
             onClick={postData}
           >
             Add
